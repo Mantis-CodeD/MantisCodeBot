@@ -1,7 +1,7 @@
 require('dotenv/config');
 const { REST, Routes, Client, GatewayIntentBits } = require('discord.js');
 const dailyScrap = require('./scrap.js');
-// const cron = require('node-cron');
+const cron = require('node-cron');
 
 const commands = [
   {
