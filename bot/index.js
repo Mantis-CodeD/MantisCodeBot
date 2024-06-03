@@ -32,16 +32,15 @@ client.on('ready', () => {
 
 client.on('interactionCreate', async (interaction) => {
   if (interaction.commandName === commands[0].name) {
-    let pushCommand = null;
     try {
-      pushCommand = await dailyScrap();
-      for await (const iterator of firstCommand) {
+      const pushCommand = await dailyScrap();
+      for await (const iterator of pushCommand) {
         await interaction.channel.send({ embeds: [iterator] });
       }
       await interaction.channel.send({
         embeds: [{
           footer: {
-            text: `*Encerrado o envio de vagas, um total de ${firstCommand.length} vagas encontradas*`
+            text: `*Encerrado o envio de vagas, um total de ${pushCommand.length} vagas encontradas*`
           }
         }]
       });
@@ -53,9 +52,8 @@ client.on('interactionCreate', async (interaction) => {
 
 cron.schedule('* * 23 * * *', async () => {
   console.log('Starting scheduler');
-  let dailyResults = null
   try {
-    dailyResults = await dailyScrap();
+    const dailyResults = await dailyScrap();
     const channel = await client.channels.fetch(process.env.DISCORD_GUILD);
     await channel.send({ embeds: [{ footer: { text: `*Iniciado agendador*` } }] });
     for await (const iterator of dailyResults) {
