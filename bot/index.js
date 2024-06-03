@@ -7,10 +7,6 @@ const commands = [
   {
     name: 'service_mantisextract',
     description: 'Inicia a extração de vagas',
-  },
-  {
-    name: 'jobs',
-    description: 'Filtre vagas por senioridade'
   }
 ];
 
@@ -28,28 +24,53 @@ const rest = new REST({ version: '10' }).setToken(process.env.DISCORD_TOKEN);
   }
 })();
 
-
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
-
 
 client.on('ready', () => {
   console.log(`Logado como ${client.user.tag}!`);
 });
 
-
-client.on('interactionCreate', async interaction => {
+client.on('interactionCreate', async (interaction) => {
   if (interaction.commandName === commands[0].name) {
-    cron.schedule('* * 23 * * *', async () => {
-      interaction.channel.send("Buscando vagas")
-      const dailyResults = await dailyScrap()
-      for (let index = 0; index < dailyResults.length; index++) {
-        await interaction.channel.send({ embeds: [dailyResults[index]] })
+    let pushCommand = null;
+    try {
+      pushCommand = await dailyScrap();
+      for await (const iterator of firstCommand) {
+        await interaction.channel.send({ embeds: [iterator] });
       }
-    })
+      await interaction.channel.send({
+        embeds: [{
+          footer: {
+            text: `*Encerrado o envio de vagas, um total de ${firstCommand.length} vagas encontradas*`
+          }
+        }]
+      });
+    } catch (error) {
+      console.log('Failed to pull jobs -> puppeteer')
+    }
   }
-}
-);
+});
 
-
+cron.schedule('* * 23 * * *', async () => {
+  console.log('Starting scheduler');
+  let dailyResults = null
+  try {
+    dailyResults = await dailyScrap();
+    const channel = await client.channels.fetch(process.env.DISCORD_GUILD);
+    await channel.send({ embeds: [{ footer: { text: `*Iniciado agendador*` } }] });
+    for await (const iterator of dailyResults) {
+      await channel.send({ embeds: [iterator] });
+    }
+    await channel.send({
+      embeds: [{
+        footer: {
+          text: `*Encerrado o envio de vagas, um total de ${dailyResults.length} vagas encontradas*`
+        }
+      }]
+    });
+  } catch (error) {
+    console.log('Failed to pull jobs -> puppeteer')
+  }
+});
 
 client.login(process.env.DISCORD_TOKEN);

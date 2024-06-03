@@ -1,6 +1,7 @@
 const pup = require('puppeteer');
 
 const dailyScrap = async () => {
+    let jobs = null;
     const browser = await pup.launch({ headless: 'auto', defaultViewport: null })
     const pages = await browser.pages();
     const page = await pages[0];
@@ -53,7 +54,8 @@ const dailyScrap = async () => {
         return jobs
     })
 
-    return resultsProgramathor.concat(resultsGeekHunter)
+    jobs = resultsProgramathor.concat(resultsGeekHunter)
+    return jobs
 }
 
 module.exports = dailyScrap;

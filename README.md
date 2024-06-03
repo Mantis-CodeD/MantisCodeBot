@@ -1,7 +1,7 @@
 
 # Mantis Code Bot
 
-Este projeto tem como finalidade fazer um scrap de vagas do site programathor e utilizar a API do Discord para fazer o envio destas vagas para o canal de vagas do discord da mantis code, sendo possível usar comandos para filtrar as  vagas vagas Junior  e Plenos  ou categorias  como CLT ou PJ.
+Este projeto tem como finalidade fazer um scrap de vagas do site programathor e utilizar a API do Discord para fazer o envio destas vagas para o canal de vagas do discord da mantis code, sendo possível usar comandos para filtrar as  vagas Junior  e Plenos  ou categorias  como CLT ou PJ.
 
 # Instalação
 
@@ -24,7 +24,7 @@ Rode o comando em seguida
 
 ## Contribuindo
 
-Fique livre para contribuir, os modulos essências utilizados são <a href='https://discord.js.org/#/'>`Discord.js`</a> e <a href='https://cheerio.js.org/'>`Cheerio.js`</a>
+Fique livre para contribuir, os modulos essências utilizados são <a href='https://discord.js.org/#/'>`Discord.js`</a> e <a href='https://pptr.dev/category/introduction'>`Puppeteer`</a>
 
 Leia as documentações destes modulos  e fique livre para solicitar  sua  ideia ou acrescentar  alguma alteração neste código, acrescentando scrap para um outro site ou quaisquer alterações  uteis  que estejam dentro  do  objetivo do código.
 
@@ -54,6 +54,6 @@ Then run the command
 
 ## Contributing
 
-Feel free to contribute, the essential modules used are <a href='https://discord.js.org/#/'>`Discord.js`</a> e <a href='https://cheerio.js.org/'>`Cheerio.js`</a>
+Feel free to contribute, the essential modules used are <a href='https://discord.js.org/#/'>`Discord.js`</a> e <a href='https://pptr.dev/category/introduction'>`Puppeteer`</a>
 
 Read the documentation for these modules and feel free to request your idea or add any changes to this code, adding scrap for another site or any useful changes that are within the scope of the code.
