@@ -2,7 +2,17 @@ const pup = require('puppeteer');
 
 const dailyScrap = async () => {
     let jobs = null;
-    const browser = await pup.launch({ headless: 'auto', defaultViewport: null })
+    const browser = await pup.launch({
+        headless: 'auto', defaultViewport: null, args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '-- desativar-accelerado-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu'
+        ]
+    })
     const pages = await browser.pages();
     const page = await pages[0];
     await page.goto('https://programathor.com.br/jobs-city/remoto')
