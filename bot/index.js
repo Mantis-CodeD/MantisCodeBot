@@ -45,7 +45,7 @@ client.on('interactionCreate', async (interaction) => {
         }]
       });
     } catch (error) {
-      console.log('Failed to pull jobs -> puppeteer')
+      console.log('Failed to pull jobs -> puppeteer', error)
     }
   }
 });
@@ -67,7 +67,7 @@ cron.schedule('* * 23 * * *', async () => {
       }]
     });
   } catch (error) {
-    console.log('Failed to pull jobs -> puppeteer')
+    console.log('Failed to pull jobs -> puppeteer', error)
   }
 });
 
