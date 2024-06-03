@@ -1,24 +1,29 @@
-const pup = require('puppeteer');
+// const pup = require('puppeteer');
+const cheerio = require('cheerio');
+const request = require('requests');
 
-const dailyScrap = async () => {
-    let jobs = null;
-    const browser = await pup.launch({
-        headless: 'auto', defaultViewport: null, args: [
-            '--no-sandbox',
-            '--disable-setuid-sandbox',
-            '--disable-dev-shm-usage',
-            '-- desativar-accelerado-2d-canvas',
-            '--no-first-run',
-            '--no-zygote',
-            '--disable-gpu'
-        ]
-    })
-    const pages = await browser.pages();
-    const page = await pages[0];
-    await page.goto('https://programathor.com.br/jobs-city/remoto')
-    const resultsProgramathor = await page.evaluate(() => {
+
+const dailyScrap = async (page = 1) => {
+    let allJobs = [];
+    const resultProgramathor = async () => {
+        const dataProgramathor = () => new Promise((resolve, reject) => {
+            request(`https://programathor.com.br/jobs-city/remoto?page=${page}`).on('data', (chunk) => {
+                resolve(chunk)
+            }).on('end', function (err) {
+                if (err) return reject(err);
+
+                console.log('End load data cheerio');
+            });
+        })
+
+        const data = await dataProgramathor();
+        const documentData = cheerio.load(data)
         const jobs = []
-        const cells = document.querySelectorAll('.cell-list-content');
+        const cells = []
+        const cell = documentData('.cell-list-content');
+        cell.each((index, element) => {
+            cells.push(documentData(element).html())
+        })
         cells.forEach((element, index) => {
             jobs.push({
                 color: 5763719,
@@ -30,42 +35,21 @@ const dailyScrap = async () => {
                 footer: {
                     text: 'Todas as vagas são retiradas do site ProgramaThor, todas as vagas presentes aqui são para trabalho remoto e devem ser consultadas diretamente no site responsável'
                 },
-                title: `Vaga: ${element.querySelector('h3').textContent}`,
-                url: document.querySelectorAll('.cell-list > a')[index].href
+                title: `Vaga: ${documentData('h3').eq(index).html()}`,
+                url: `https://programathor.com.br` + documentData('.cell-list > a').eq(index).attr('href')
             })
         })
+
         return jobs
-    })
+    }
 
-    await page.goto("https://www.geekhunter.com.br/vagas");
-    await page.waitForSelector('#__next > div.css-1x4b1hx > div > div > div > div > div:nth-child(3) > div.chakra-stack.css-nd8846 > label:nth-child(1) > span.chakra-checkbox__control.css-1g040xt')
-    await page.click('#__next > div.css-1x4b1hx > div > div > div > div > div:nth-child(3) > div.chakra-stack.css-nd8846 > label:nth-child(1) > span.chakra-checkbox__control.css-1g040xt');
-    await page.click('#__next > div.css-1x4b1hx > div > div > div > div > button');
-    await page.waitForSelector('.css-z1iy3r')
 
-    const resultsGeekHunter = await page.evaluate(() => {
-        const jobs = []
-        const cells = document.querySelectorAll('.css-z1iy3r');
-        cells.forEach((element, index) => {
-            jobs.push({
-                color: 5763719,
-                author: {
-                    name: 'GeekHunter',
-                    icon_url: 'https://i.imgur.com/p4WbwgG.png',
-                    url: 'https://www.geekhunter.com.br/'
-                },
-                footer: {
-                    text: 'Todas as vagas são retiradas do site GeekHunter, todas as vagas presentes aqui são para trabalho remoto e devem ser consultadas diretamente no site responsável'
-                },
-                title: `Vaga: ${element.querySelector('div > h3').textContent}`,
-                url: document.querySelectorAll('.css-1g6fhjg > a')[index].href
-            })
-        })
-        return jobs
-    })
-
-    jobs = resultsProgramathor.concat(resultsGeekHunter)
-    return jobs
+    for (let i = 1; i < page; i++) {
+        const result = await resultProgramathor(i)
+        allJobs = allJobs.concat(result)
+    }
+    
+    return allJobs
 }
 
 module.exports = dailyScrap;

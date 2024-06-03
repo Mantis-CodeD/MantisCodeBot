@@ -33,7 +33,7 @@ client.on('ready', () => {
 client.on('interactionCreate', async (interaction) => {
   if (interaction.commandName === commands[0].name) {
     try {
-      const pushCommand = await dailyScrap();
+      const pushCommand = await dailyScrap(process.env.PAGES);
       for await (const iterator of pushCommand) {
         await interaction.channel.send({ embeds: [iterator] });
       }
@@ -45,15 +45,15 @@ client.on('interactionCreate', async (interaction) => {
         }]
       });
     } catch (error) {
-      console.log('Failed to pull jobs -> puppeteer', error)
+      console.log('Failed to pull jobs -> puppeteer', error);
     }
   }
 });
 
-cron.schedule('* * 23 * * *', async () => {
+cron.schedule('0 50 23 * * *', async () => {
   console.log('Starting scheduler');
   try {
-    const dailyResults = await dailyScrap();
+    const dailyResults = await dailyScrap(process.env.PAGES);
     const channel = await client.channels.fetch(process.env.DISCORD_GUILD);
     await channel.send({ embeds: [{ footer: { text: `*Iniciado agendador*` } }] });
     for await (const iterator of dailyResults) {
@@ -67,7 +67,7 @@ cron.schedule('* * 23 * * *', async () => {
       }]
     });
   } catch (error) {
-    console.log('Failed to pull jobs -> puppeteer', error)
+    console.log('Failed to pull jobs -> puppeteer', error);
   }
 });
 
