@@ -50,7 +50,7 @@ client.on('interactionCreate', async (interaction) => {
   }
 });
 
-cron.schedule('0 50 23 * * *', async () => {
+cron.schedule(process.env.CRON_OPTION, async () => {
   console.log('Starting scheduler');
   try {
     const dailyResults = await dailyScrap(process.env.PAGES);
